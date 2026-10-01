@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Broken Shop — staging</title>
+    <style>
+      :root { font-family: ui-sans-serif, system-ui, sans-serif; }
+      body { margin: 0; background: #f6f3ee; color: #1a1a1a; }
+      .hero { padding: 32px 16px 120px; }
+      .wide-strip {
+        width: 1400px;
+        background: #111;
+        color: #fff;
+        padding: 12px 24px;
+      }
+      .nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 64px;
+        background: #111;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        z-index: 20;
+      }
+      .cta {
+        position: fixed;
+        right: 8px;
+        bottom: 12px;
+        z-index: 30;
+        background: #e11d48;
+        color: #fff;
+        border: 0;
+        padding: 16px 28px;
+        font-size: 16px;
+        border-radius: 999px;
+      }
+      img.hero-shot { width: 240px; height: 160px; background: #ddd; }
+      form { margin-top: 24px; display: flex; gap: 8px; }
+      input { padding: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="wide-strip">Free shipping banner that is intentionally too wide for mobile viewports.</div>
+    <nav class="nav" aria-label="Primary">
+      <a href="/" style="color:#fff">Home</a>
+      <a href="/checkout" style="color:#fff">Checkout</a>
+    </nav>
+    <main class="hero">
+      <h1>Broken Shop</h1>
+      <p>Staging catalog with known defects for BugPilot evaluation.</p>
+      <img class="hero-shot" src="/missing-hero.png" />
+      <form action="/checkout" method="get">
+        <input type="search" name="q" placeholder="Search" />
+        <button type="submit">Search</button>
+      </form>
+      <button class="cta">Buy now</button>
+    </main>
+    <script>
+      console.error("Payment SDK failed to initialize");
+      throw new Error("Uncaught catalog renderer exception");
+    </script>
+  </body>
+</html>
