@@ -46,14 +46,7 @@ def score_action(
         risk = 1.0
         already_tested_penalty = 1.0
 
-    score = (
-        novelty
-        + importance
-        + interaction_probability
-        + bug_value
-        - risk
-        - already_tested_penalty
-    )
+    score = novelty + importance + interaction_probability + bug_value - risk - already_tested_penalty
     action.novelty = novelty
     action.importance = importance
     action.interaction_probability = interaction_probability

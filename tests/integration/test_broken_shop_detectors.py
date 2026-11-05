@@ -3,12 +3,11 @@
 from pathlib import Path
 
 import pytest
-from playwright.async_api import async_playwright
-
 from bugpilot_core.agent.dom_script import DOM_SCRIPT
 from bugpilot_core.detectors import run_detectors
 from bugpilot_core.detectors.base import PageSnapshot
 from bugpilot_core.models import BoundingBox, DomElement, FindingCategory, TestCategory, Viewport
+from playwright.async_api import async_playwright
 
 
 @pytest.mark.asyncio
@@ -48,7 +47,12 @@ async def test_broken_shop_file_has_real_bugs():
     )
     findings = run_detectors(
         snap,
-        [TestCategory.VISUAL, TestCategory.RESPONSIVE, TestCategory.ACCESSIBILITY, TestCategory.CONTENT],
+        [
+            TestCategory.VISUAL,
+            TestCategory.RESPONSIVE,
+            TestCategory.ACCESSIBILITY,
+            TestCategory.CONTENT,
+        ],
     )
     categories = {f.category for f in findings}
     assert FindingCategory.OVERFLOW in categories

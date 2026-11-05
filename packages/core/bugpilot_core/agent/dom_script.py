@@ -75,10 +75,16 @@ DOM_SCRIPT = r"""
       box: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
       styles: {
         overflow: style.overflow,
+        overflowX: style.overflowX,
+        overflowY: style.overflowY,
         position: style.position,
         zIndex: style.zIndex,
         textOverflow: style.textOverflow,
         display: style.display,
+        visibility: style.visibility,
+        fontSize: style.fontSize,
+        lineHeight: style.lineHeight,
+        whiteSpace: style.whiteSpace,
       },
       attributes: attrs,
     };

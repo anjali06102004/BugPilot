@@ -1,0 +1,116 @@
+name: bugpilot
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bugpilot
+      POSTGRES_PASSWORD: bugpilot
+      POSTGRES_DB: bugpilot
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bugpilot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/Dockerfile.api
+    environment:
+      BUGPILOT_ENV: production
+      DATABASE_URL: postgresql+asyncpg://bugpilot:bugpilot@postgres:5432/bugpilot
+      REDIS_URL: redis://redis:6379/0
+      EVIDENCE_DIR: /app/data/evidence
+      EVIDENCE_SIGNING_SECRET: ${EVIDENCE_SIGNING_SECRET:?set a signing secret}
+      WEB_ORIGIN: http://localhost:3000
+      AUTH_REQUIRED: "true"
+      API_KEYS: ${API_KEYS:?set API_KEYS, e.g. admin-key:admin}
+      LOG_JSON: "true"
+      RATE_LIMIT_REQUESTS_PER_MINUTE: "240"
+      RATE_LIMIT_EXPENSIVE_PER_MINUTE: "12"
+      RETENTION_CHECK_INTERVAL_SECONDS: "86400"
+      AI_PROVIDER: ${AI_PROVIDER:-local}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    volumes:
+      - evidence:/app/data/evidence
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  worker:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/Dockerfile.worker
+    environment:
+      BUGPILOT_ENV: production
+      DATABASE_URL: postgresql+asyncpg://bugpilot:bugpilot@postgres:5432/bugpilot
+      REDIS_URL: redis://redis:6379/0
+      EVIDENCE_DIR: /app/data/evidence
+      EVIDENCE_SIGNING_SECRET: ${EVIDENCE_SIGNING_SECRET:?set a signing secret}
+      AUTH_REQUIRED: "true"
+      API_KEYS: ${API_KEYS:?set API_KEYS}
+      STALE_SCAN_MINUTES: "30"
+      AI_PROVIDER: ${AI_PROVIDER:-local}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      BLOCK_PRIVATE_TARGETS: "true"
+    volumes:
+      - evidence:/app/data/evidence
+    depends_on:
+      api:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/Dockerfile.web
+      args:
+        NEXT_PUBLIC_API_URL: ""
+    environment:
+      # Server-only: the browser talks to /backend and never sees the key.
+      BUGPILOT_API_URL: http://api:8000
+      BUGPILOT_API_KEY: ${DASHBOARD_API_KEY:?set DASHBOARD_API_KEY (admin scope)}
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+  # The deliberately broken demo site used by the end-to-end walkthrough.
+  fixture:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ../fixtures/broken-shop:/app
+    command: ["sh", "-c", "pip install --quiet fastapi uvicorn && uvicorn server:app --host 0.0.0.0 --port 4173"]
+    ports:
+      - "4173:4173"
+
+volumes:
+  pgdata:
+  redisdata:
+  evidence:

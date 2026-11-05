@@ -3,14 +3,13 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from pydantic import ValidationError
-
 from bugpilot_core.ai.providers.base import (
     ProviderCapabilities,
     ReasoningResult,
     VisionAnalysis,
 )
 from bugpilot_core.ai.providers.local import LocalProvider
+from pydantic import ValidationError
 
 
 class GeminiProvider:
@@ -22,14 +21,20 @@ class GeminiProvider:
     def capabilities(self) -> ProviderCapabilities:
         return ProviderCapabilities(name="gemini", multimodal=True, structured_output=True)
 
-    async def analyze_vision(self, *, prompt: str, image_bytes: bytes, context: dict[str, Any]) -> VisionAnalysis:
+    async def analyze_vision(
+        self, *, prompt: str, image_bytes: bytes, context: dict[str, Any]
+    ) -> VisionAnalysis:
         if not self.api_key:
-            return await self._fallback.analyze_vision(prompt=prompt, image_bytes=image_bytes, context=context)
+            return await self._fallback.analyze_vision(
+                prompt=prompt, image_bytes=image_bytes, context=context
+            )
         try:
             from google import genai
             from google.genai import types
         except ImportError:
-            return await self._fallback.analyze_vision(prompt=prompt, image_bytes=image_bytes, context=context)
+            return await self._fallback.analyze_vision(
+                prompt=prompt, image_bytes=image_bytes, context=context
+            )
 
         client = genai.Client(api_key=self.api_key)
         schema_hint = VisionAnalysis.model_json_schema()

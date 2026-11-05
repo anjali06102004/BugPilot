@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BugPilot</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="head">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">🐞</span>
+        <div>
+          <p class="brand-name">BugPilot</p>
+          <p class="brand-sub">UI bug scout</p>
+        </div>
+      </div>
+      <button id="settings-button" class="icon-button" title="Settings" aria-label="Open settings">⚙</button>
+    </header>
+
+    <section class="page-url">
+      <p class="label">Current tab</p>
+      <p id="tab-url" class="url">Loading…</p>
+    </section>
+
+    <section class="scope-section" aria-labelledby="scope-heading">
+      <p id="scope-heading" class="label">What should BugPilot inspect?</p>
+      <div class="scope-grid" role="radiogroup" aria-labelledby="scope-heading">
+        <button class="scope" data-scope="single_url" role="radio" aria-checked="true">
+          <span class="scope-title">Current URL</span>
+          <span class="scope-desc">One page only. Never follows links.</span>
+        </button>
+        <button class="scope" data-scope="full_site" role="radio" aria-checked="false">
+          <span class="scope-title">Full website</span>
+          <span class="scope-desc">Crawl authorized same-origin routes.</span>
+        </button>
+        <button class="scope" data-scope="selected_element" role="radio" aria-checked="false">
+          <span class="scope-title">Select element</span>
+          <span class="scope-desc">One component and its context.</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="element-panel" class="panel" hidden>
+      <p class="label">Selected element</p>
+      <p id="element-preview" class="element-preview">Nothing selected yet.</p>
+      <button id="pick-button" class="button secondary">Pick an element on the page</button>
+    </section>
+
+    <section class="panel">
+      <label class="field">
+        <span>API key (optional)</span>
+        <input id="api-key" type="password" placeholder="X-API-Key" autocomplete="off" />
+      </label>
+      <div class="row">
+        <label class="field">
+          <span>Viewports</span>
+          <select id="viewport">
+            <option value="desktop">Desktop 1280</option>
+            <option value="tablet">Tablet 768</option>
+            <option value="mobile" selected>Mobile 390</option>
+            <option value="all">All three</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Interactions</span>
+          <select id="interaction">
+            <option value="safe" selected>Safe</option>
+            <option value="none">None</option>
+            <option value="deep">Deep</option>
+          </select>
+        </label>
+      </div>
+      <div class="row" id="site-options" hidden>
+        <label class="field">
+          <span>Max pages</span>
+          <input id="max-pages" type="number" min="1" max="100" value="10" />
+        </label>
+        <label class="field">
+          <span>Max depth</span>
+          <input id="max-depth" type="number" min="0" max="6" value="2" />
+        </label>
+      </div>
+      <details class="categories">
+        <summary>Detection categories</summary>
+        <div id="category-list" class="chips"></div>
+      </details>
+    </section>
+
+    <section id="scan-panel" class="panel scan-panel" hidden>
+      <div class="scan-head">
+        <span id="scan-status" class="pill">queued</span>
+        <span id="scan-scope" class="scan-scope"></span>
+      </div>
+      <p id="scan-summary" class="scan-summary"></p>
+      <div class="actions">
+        <button id="pause-button" class="button secondary" hidden>Pause</button>
+        <button id="resume-button" class="button primary" hidden>Resume</button>
+        <button id="stop-button" class="button danger" hidden>Stop</button>
+        <button id="report-button" class="button secondary" hidden>Open report</button>
+      </div>
+    </section>
+
+    <p id="message" class="message" role="status" hidden></p>
+
+    <div class="start-row">
+      <button id="start-button" class="button primary wide">Start scan</button>
+    </div>
+
+    <footer class="foot">
+      <label class="toggle">
+        <input id="sound-toggle" type="checkbox" />
+        <span>Sound</span>
+      </label>
+      <label class="toggle">
+        <input id="animation-toggle" type="checkbox" checked />
+        <span>Animations</span>
+      </label>
+      <label class="toggle">
+        <input id="overlay-toggle" type="checkbox" checked />
+        <span>Overlay</span>
+      </label>
+    </footer>
+
+    <p class="legal">
+      Enabling BugPilot never starts a scan. Only test sites you are authorized to test. No page content
+      is sent to an AI provider by the extension.
+    </p>
+
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

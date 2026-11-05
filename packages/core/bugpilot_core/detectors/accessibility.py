@@ -44,7 +44,11 @@ def detect_accessibility(snapshot: PageSnapshot) -> list[FindingCandidate]:
         last_level = level
 
     for el in snapshot.elements:
-        if el.tag == "img" and el.attributes.get("alt") is None and el.attributes.get("role") != "presentation":
+        if (
+            el.tag == "img"
+            and el.attributes.get("alt") is None
+            and el.attributes.get("role") != "presentation"
+        ):
             findings.append(
                 candidate(
                     snapshot,
@@ -55,7 +59,10 @@ def detect_accessibility(snapshot: PageSnapshot) -> list[FindingCandidate]:
                     confidence=0.92,
                     selector=el.selector,
                     fingerprint=el.fingerprint,
-                    expected="Informative images have alt text; decorative images have empty alt or role=presentation.",
+                    expected=(
+                        "Informative images have alt text; decorative images have empty alt "
+                        "or role=presentation."
+                    ),
                     actual="alt attribute missing",
                     error_signature=f"a11y:alt:{el.fingerprint}",
                     metadata={"accessibility_impact": 0.7},

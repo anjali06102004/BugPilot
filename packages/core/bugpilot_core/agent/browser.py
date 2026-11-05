@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import hashlib
-import json
-from datetime import datetime, timezone
+from collections.abc import Awaitable, Callable
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Awaitable, Callable
+from typing import Any
 from uuid import uuid4
-
-from playwright.async_api import Browser, Page, async_playwright
 
 from bugpilot_core.agent.dom_script import DOM_SCRIPT
 from bugpilot_core.detectors.base import PageSnapshot
@@ -21,6 +19,7 @@ from bugpilot_core.models import (
     ScanEvent,
     Viewport,
 )
+from playwright.async_api import Browser, Page, async_playwright
 
 EventEmitter = Callable[[ScanEvent], Awaitable[None]]
 
@@ -127,20 +126,20 @@ class BrowserSession:
             screenshot_path=str(screenshot_path),
         )
 
-    async def click(self, selector: str) -> None:
+    async def click(self, selector: str, *, timeout_ms: int = 8000) -> None:
         assert self.page
         self.last_action = f"click {selector}"
-        await self.page.locator(selector).first.click(timeout=8000)
+        await self.page.locator(selector).first.click(timeout=timeout_ms)
 
-    async def fill(self, selector: str, value: str) -> None:
+    async def fill(self, selector: str, value: str, *, timeout_ms: int = 8000) -> None:
         assert self.page
         self.last_action = f"fill {selector}"
-        await self.page.locator(selector).first.fill(value, timeout=8000)
+        await self.page.locator(selector).first.fill(value, timeout=timeout_ms)
 
-    async def hover(self, selector: str) -> None:
+    async def hover(self, selector: str, *, timeout_ms: int = 8000) -> None:
         assert self.page
         self.last_action = f"hover {selector}"
-        await self.page.locator(selector).first.hover(timeout=8000)
+        await self.page.locator(selector).first.hover(timeout=timeout_ms)
 
     async def scroll(self) -> None:
         assert self.page
@@ -150,14 +149,25 @@ class BrowserSession:
     def _on_console(self, msg: Any) -> None:
         if msg.type in {"error", "warning"}:
             self.console.append(
-                ConsoleEvent(level="error" if msg.type == "error" else "warn", text=msg.text, url=self.page.url if self.page else None)
+                ConsoleEvent(
+                    level="error" if msg.type == "error" else "warn",
+                    text=msg.text,
+                    url=self.page.url if self.page else None,
+                )
             )
 
     def _on_pageerror(self, error: Any) -> None:
-        self.console.append(ConsoleEvent(level="pageerror", text=str(error), url=self.page.url if self.page else None))
+        self.console.append(
+            ConsoleEvent(level="pageerror", text=str(error), url=self.page.url if self.page else None)
+        )
 
     def _on_request_failed(self, request: Any) -> None:
-        failure = request.failure()
+        # Playwright exposed `failure` as a method in older releases and as a
+        # property in newer ones; support both so failed requests never crash
+        # the event handler.
+        failure = request.failure
+        if callable(failure):
+            failure = failure()
         self.network.append(
             NetworkEvent(
                 method=request.method,
@@ -185,4 +195,4 @@ class BrowserSession:
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)

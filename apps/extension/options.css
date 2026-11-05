@@ -1,0 +1,46 @@
+﻿:root {
+  color-scheme: dark;
+  --ink: #09090b;
+  --panel: #121316;
+  --line: #27272a;
+  --muted: #a1a1aa;
+  --lime: #84cc16;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: #f4f4f5;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+}
+main { max-width: 640px; margin: 0 auto; padding: 32px 20px 60px; }
+header { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+.mark {
+  display: grid; place-items: center; width: 44px; height: 44px;
+  border-radius: 12px; border: 1px solid rgba(132,204,22,.35); background: rgba(132,204,22,.1); font-size: 20px;
+}
+h1 { margin: 0; font-size: 20px; letter-spacing: -.01em; }
+.sub { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+section { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 18px; margin-bottom: 16px; }
+h2 { margin: 0 0 14px; font-size: 12px; text-transform: uppercase; letter-spacing: .14em; color: #d4d4d8; }
+label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+label.toggle { flex-direction: row; align-items: center; gap: 8px; color: #e4e4e7; font-size: 13px; }
+input[type="url"], input[type="text"] {
+  background: var(--ink); border: 1px solid var(--line); border-radius: 9px;
+  padding: 8px 10px; color: #f4f4f5; font: inherit; width: 100%;
+}
+input[type="url"]:focus { outline: none; border-color: rgba(132,204,22,.6); }
+input[type="range"] { accent-color: var(--lime); width: 100%; }
+input[type="checkbox"] { accent-color: var(--lime); width: 16px; height: 16px; }
+small { font-size: 11px; line-height: 1.5; color: #71717a; }
+.row { display: flex; gap: 8px; }
+.button {
+  border-radius: 9px; border: 1px solid var(--line); background: transparent;
+  color: #e4e4e7; padding: 8px 14px; font: inherit; font-size: 13px; cursor: pointer;
+}
+.button.primary { background: var(--lime); border-color: var(--lime); color: #0b0c0e; font-weight: 600; }
+.status { margin: 12px 0 0; font-size: 12px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); }
+.status.ok { border-color: rgba(16,185,129,.4); color: #6ee7b7; }
+.status.error { border-color: rgba(244,63,94,.4); color: #fecdd3; }
+ul { margin: 0; padding-left: 18px; color: #a1a1aa; font-size: 12px; line-height: 1.7; }

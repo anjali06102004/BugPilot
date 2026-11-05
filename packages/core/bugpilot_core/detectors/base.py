@@ -65,7 +65,11 @@ def candidate(
         EvidenceItem(kind="url", content={"url": snapshot.url}),
         EvidenceItem(
             kind="viewport",
-            content={"name": snapshot.viewport.name, "width": snapshot.viewport.width, "height": snapshot.viewport.height},
+            content={
+                "name": snapshot.viewport.name,
+                "width": snapshot.viewport.width,
+                "height": snapshot.viewport.height,
+            },
         ),
     ]
     if snapshot.screenshot_path:

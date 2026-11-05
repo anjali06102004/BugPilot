@@ -4,6 +4,17 @@ from bugpilot_core.models import FindingCandidate, FindingCategory
 SKIP_TAGS = {"html", "body", "script", "style", "head", "meta", "link"}
 
 
+def _text_overflow(el) -> str:
+    """Read the computed text-overflow value.
+
+    The DOM snapshot stores the camelCase computed-style name, but a CSS
+    author may also express it as `text-overflow`, so both spellings are
+    accepted instead of silently missing the condition.
+    """
+    styles = el.styles or {}
+    return (styles.get("textOverflow") or styles.get("text-overflow") or "").strip().lower()
+
+
 def detect_layout(snapshot: PageSnapshot) -> list[FindingCandidate]:
     findings: list[FindingCandidate] = []
     visible = [
@@ -32,8 +43,7 @@ def detect_layout(snapshot: PageSnapshot) -> list[FindingCandidate]:
                     category=FindingCategory.LAYOUT,
                     title="Interactive elements overlap",
                     description=(
-                        f"{a.tag} '{a.text[:40]}' overlaps {b.tag} '{b.text[:40]}' "
-                        f"by {area:.0f}px²."
+                        f"{a.tag} '{a.text[:40]}' overlaps {b.tag} '{b.text[:40]}' by {area:.0f}px²."
                     ),
                     source="layout_detector",
                     confidence=0.91,
@@ -55,7 +65,7 @@ def detect_layout(snapshot: PageSnapshot) -> list[FindingCandidate]:
             el.box.x + el.box.width < 4
             or el.box.y + el.box.height < 4
             or el.box.x > snapshot.viewport.width - 4
-            or el.styles.get("text-overflow") == "clip"
+            or _text_overflow(el) == "clip"
         )
     ]
     for el in clipped[:6]:
@@ -63,7 +73,7 @@ def detect_layout(snapshot: PageSnapshot) -> list[FindingCandidate]:
             candidate(
                 snapshot,
                 category=FindingCategory.VISUAL,
-                title="Interactive control appears clipped",
+                title=f"Interactive control appears clipped: {el.tag}",
                 description=f"{el.selector} may be clipped or positioned outside the usable viewport.",
                 source="layout_detector",
                 confidence=0.72,

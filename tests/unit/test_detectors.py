@@ -1,7 +1,13 @@
-from bugpilot_core.detectors.base import PageSnapshot
-from bugpilot_core.models import BoundingBox, ConsoleEvent, DomElement, FindingCategory, Viewport
 from bugpilot_core.detectors import run_detectors
-from bugpilot_core.models import TestCategory
+from bugpilot_core.detectors.base import PageSnapshot
+from bugpilot_core.models import (
+    BoundingBox,
+    ConsoleEvent,
+    DomElement,
+    FindingCategory,
+    TestCategory,
+    Viewport,
+)
 
 
 def el(**kwargs) -> DomElement:

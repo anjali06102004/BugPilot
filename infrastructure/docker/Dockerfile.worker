@@ -1,0 +1,23 @@
+# Browser worker image — Playwright base includes the browser dependencies.
+FROM mcr.microsoft.com/playwright/python:v1.49.0-noble
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+COPY pyproject.toml README.md ./
+COPY packages ./packages
+COPY services ./services
+COPY migrations ./migrations
+COPY alembic.ini ./
+
+RUN pip install --upgrade pip && pip install .
+
+RUN useradd --create-home --uid 10002 bugpilot \
+    && mkdir -p /app/data/evidence \
+    && chown -R bugpilot:bugpilot /app
+USER bugpilot
+
+CMD ["python", "-m", "worker.main"]

@@ -22,7 +22,7 @@ out/
 .env
 .env.local
 .env.*.local
-!.env.example
+.env.example
 
 # Data
 data/
@@ -44,3 +44,9 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Temporary debugging scripts
+check_findings.py
+check_scans.py
+claim_scan.py
+run_scan.py

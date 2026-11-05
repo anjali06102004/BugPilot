@@ -15,7 +15,9 @@ def detect_forms(snapshot: PageSnapshot) -> list[FindingCandidate]:
                     snapshot,
                     category=FindingCategory.FORMS,
                     title="Required form disables native validation",
-                    description="A form with required fields uses novalidate, so the browser will not check them.",
+                    description=(
+                        "A form with required fields uses novalidate, so the browser will not check them."
+                    ),
                     source="forms_detector",
                     confidence=0.7,
                     selector=el.selector,

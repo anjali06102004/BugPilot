@@ -15,8 +15,14 @@ class LocalProvider:
     def capabilities(self) -> ProviderCapabilities:
         return ProviderCapabilities(name="local", multimodal=False, structured_output=True)
 
-    async def analyze_vision(self, *, prompt: str, image_bytes: bytes, context: dict[str, Any]) -> VisionAnalysis:
-        return VisionAnalysis(anomalies=[], notes="LocalProvider skipped vision (no cloud model).", should_verify=False)
+    async def analyze_vision(
+        self, *, prompt: str, image_bytes: bytes, context: dict[str, Any]
+    ) -> VisionAnalysis:
+        return VisionAnalysis(
+            anomalies=[],
+            notes="LocalProvider skipped vision (no cloud model).",
+            should_verify=False,
+        )
 
     async def reason(self, *, prompt: str, context: dict[str, Any]) -> ReasoningResult:
         candidate = context.get("candidate") or {}

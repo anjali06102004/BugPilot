@@ -3,14 +3,13 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from pydantic import ValidationError
-
 from bugpilot_core.ai.providers.base import (
     ProviderCapabilities,
     ReasoningResult,
     VisionAnalysis,
 )
 from bugpilot_core.ai.providers.local import LocalProvider
+from pydantic import ValidationError
 
 
 class OpenAIProvider:
@@ -22,13 +21,19 @@ class OpenAIProvider:
     def capabilities(self) -> ProviderCapabilities:
         return ProviderCapabilities(name="openai", multimodal=True, structured_output=True)
 
-    async def analyze_vision(self, *, prompt: str, image_bytes: bytes, context: dict[str, Any]) -> VisionAnalysis:
+    async def analyze_vision(
+        self, *, prompt: str, image_bytes: bytes, context: dict[str, Any]
+    ) -> VisionAnalysis:
         if not self.api_key:
-            return await self._fallback.analyze_vision(prompt=prompt, image_bytes=image_bytes, context=context)
+            return await self._fallback.analyze_vision(
+                prompt=prompt, image_bytes=image_bytes, context=context
+            )
         try:
             from openai import AsyncOpenAI
         except ImportError:
-            return await self._fallback.analyze_vision(prompt=prompt, image_bytes=image_bytes, context=context)
+            return await self._fallback.analyze_vision(
+                prompt=prompt, image_bytes=image_bytes, context=context
+            )
 
         import base64
 
@@ -42,7 +47,10 @@ class OpenAIProvider:
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": prompt + "\n" + json.dumps(context, default=str)[:8000]},
+                        {
+                            "type": "text",
+                            "text": prompt + "\n" + json.dumps(context, default=str)[:8000],
+                        },
                         {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}},
                     ],
                 }

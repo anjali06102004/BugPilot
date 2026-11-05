@@ -20,7 +20,12 @@ def detect_overflow(snapshot: PageSnapshot) -> list[FindingCandidate]:
                 expected="Page content fits within the viewport without horizontal scrolling.",
                 actual=f"scrollWidth={snapshot.scroll_width:.0f}, clientWidth={snapshot.client_width:.0f}",
                 error_signature=f"h-overflow:{snapshot.viewport.width}",
-                metadata={"horizontal": True, "user_impact": 0.75, "workflow_impact": 0.4},
+                metadata={
+                    "horizontal": True,
+                    "user_impact": 0.8,
+                    "workflow_impact": 0.6,
+                    "scope": 0.5,
+                },
             )
         )
     overflowing = [
@@ -38,7 +43,9 @@ def detect_overflow(snapshot: PageSnapshot) -> list[FindingCandidate]:
                 snapshot,
                 category=FindingCategory.OVERFLOW,
                 title=f"Element wider than viewport: {el.tag}",
-                description=f"{el.selector} is {el.box.width:.0f}px wide in a {snapshot.client_width:.0f}px viewport.",
+                description=(
+                    f"{el.selector} is {el.box.width:.0f}px wide in a {snapshot.client_width:.0f}px viewport."
+                ),
                 source="overflow_detector",
                 confidence=0.86,
                 selector=el.selector,

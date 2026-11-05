@@ -45,7 +45,10 @@ class ActionPolicy:
         for pattern in DESTRUCTIVE_PATTERNS:
             if re.search(pattern, haystack):
                 # Checkout as a page to inspect is allowed; submitting payment is not.
-                if pattern == r"\bcheckout\b" and action.type in {ActionType.NAVIGATE, ActionType.CLICK}:
+                if pattern == r"\bcheckout\b" and action.type in {
+                    ActionType.NAVIGATE,
+                    ActionType.CLICK,
+                }:
                     if not re.search(r"\b(pay|place order|confirm purchase|buy)\b", haystack):
                         continue
                 return self._block(action, f"Blocked potentially destructive action matching '{pattern}'.")
