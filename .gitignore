@@ -22,7 +22,7 @@ out/
 .env
 .env.local
 .env.*.local
-.env.example
+
 
 # Data
 data/
@@ -50,3 +50,6 @@ check_findings.py
 check_scans.py
 claim_scan.py
 run_scan.py
+
+
+README.md
